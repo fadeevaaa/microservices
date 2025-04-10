@@ -1,0 +1,75 @@
+services:
+  eurekaserver:
+    build: ./eurekaserver
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=eurekaserver
+    networks:
+      - app-network
+
+  userservice:
+    build: ./employeeservice
+    depends_on:
+      - eurekaserver
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=userservice
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8081/eureka/
+      - SERVER_PORT=8085
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/staff_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    expose:
+      - 8085
+    networks:
+      - app-network
+
+  companyservice:
+    build: ./companyservice
+    depends_on:
+      - eurekaserver
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=companyservice
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8081/eureka/
+      - SERVER_PORT=8086
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/staff_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    expose:
+      - 8086
+    networks:
+      - app-network
+
+  apigateway:
+    build: ./apigateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eurekaserver
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_APPLICATION_NAME=apigateway
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8081/eureka/
+    networks:
+      - app-network
+
+  postgres:
+    image: 'postgres:latest'
+    container_name: 'postgresql'
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_DB=staff_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

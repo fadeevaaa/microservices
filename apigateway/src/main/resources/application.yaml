@@ -1,0 +1,33 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: apigateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: userservice
+          uri: lb://userservice
+          predicates:
+            - Path=/users/**
+          filters:
+            - RewritePath=/users/(?<segment>.*), /$\{segment}
+        - id: companyservice
+          uri: lb://companyservice
+          predicates:
+            - Path=/companies/**
+          filters:
+            - RewritePath=/companies/(?<segment>.*), /$\{segment}
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8081/eureka/
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
