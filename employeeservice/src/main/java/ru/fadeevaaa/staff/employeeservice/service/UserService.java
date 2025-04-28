@@ -1,8 +1,8 @@
 package ru.fadeevaaa.staff.employeeservice.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.fadeevaaa.staff.employeeservice.dto.ResponseDto;
 import ru.fadeevaaa.staff.employeeservice.dto.UserDto;
 import ru.fadeevaaa.staff.employeeservice.model.User;
 
@@ -11,15 +11,15 @@ import java.util.List;
 @Service
 public interface UserService {
 
-    ResponseDto create(User user);
+    UserDto create(User user);
 
-    ResponseDto getUserById(long id);
+    UserDto getUserById(long id);
 
-    ResponseDto updateUser(long id, User updatedUser);
+    UserDto updateUser(long id, User updatedUser);
 
-    ResponseEntity<User> deleteUser(long id);
+    ResponseEntity<UserDto> deleteUser(long id);
 
-    List<ResponseDto> getAllUsers();
+    Page<UserDto> getAllUsers(Integer offset, Integer limit);
 
     List<UserDto> getAllUsersByCompanyId(long companyId);
 }

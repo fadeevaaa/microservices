@@ -1,12 +1,16 @@
 package ru.fadeevaaa.staff.companyservice.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "companies")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Company {
 
     @Id
@@ -19,47 +23,6 @@ public class Company {
     @Column(name = "budget")
     private Double budget;
 
-    public Company(long id, String name, Double budget) {
-        this.id = id;
-        this.name = name;
-        this.budget = budget;
-    }
-
-    public Company() {
-    }
-
-//    @Transient
-//    private List<Long> employeesId;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Double getBudget() {
-        return budget;
-    }
-
-    public void setBudget(Double budget) {
-        this.budget = budget;
-    }
-
-//    public List<Long> getEmployeesId() {
-//        return employeesId;
-//    }
-//
-//    public void setEmployeesId(List<Long> employeesId) {
-//        this.employeesId = employeesId;
-//    }
+    @ElementCollection(fetch=FetchType.EAGER)
+    private Set<Long> employeesId = new HashSet<>();
 }

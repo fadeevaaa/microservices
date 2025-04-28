@@ -1,35 +1,24 @@
 package ru.fadeevaaa.staff.employeeservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
 
+    @NotBlank(message = "Имя обязательно должно быть заполнено.")
     private String firstName;
+    @NotBlank(message = "Фамилия должна быть указана.")
     private String lastName;
+    @Pattern(regexp="^\\+?[1-9]\\d{1,14}$",
+            message = "Телефон должен соответствовать международному формату (+XXXXXXXXXXX)")
     private String phoneNumber;
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public UserDto() {
-    }
+    private CompanyDto company;
 }

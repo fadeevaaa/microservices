@@ -1,129 +1,106 @@
 package ru.fadeevaaa.staff.employeeservice.service;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.fadeevaaa.staff.employeeservice.dto.CompanyDto;
-import ru.fadeevaaa.staff.employeeservice.dto.ResponseDto;
 import ru.fadeevaaa.staff.employeeservice.dto.UserDto;
+import ru.fadeevaaa.staff.employeeservice.mapper.UserMapper;
 import ru.fadeevaaa.staff.employeeservice.model.User;
 import ru.fadeevaaa.staff.employeeservice.repository.UserRepository;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final APIClient apiClient;
+    private final UserMapper mapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, APIClient apiClient) {
+    public UserServiceImpl(UserRepository userRepository, APIClient apiClient, UserMapper mapper) {
         this.userRepository = userRepository;
         this.apiClient = apiClient;
+        this.mapper = mapper;
     }
 
     @Override
-    public ResponseDto create(User user) {
-        ResponseDto responseDto = new ResponseDto();
+    public UserDto create(User user) {
         User newUser = userRepository.save(user);
-        UserDto userDto = mapToUser(newUser);
+        UserDto userDto = mapper.toDto(newUser);
 
         CompanyDto companyDto = apiClient.getUserCompanyById(user.getCompanyId());
-        responseDto.setUser(userDto);
-        responseDto.setCompany(companyDto);
-
-        return responseDto;
-//        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
-    }
-
-//    @Override
-//    public ResponseEntity<User> getUserById(long id) {
-//        Optional<User> user = userRepository.findById(id);
-//        if (user.isEmpty()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<>(user.get(), HttpStatus.OK);
-//    }
-
-    @Override
-    public ResponseDto getUserById(long userId) {
-
-        ResponseDto responseDto = new ResponseDto();
-        User user = userRepository.findById(userId).get();
-        UserDto userDto = mapToUser(user);
-
-        CompanyDto companyDto = apiClient.getUserCompanyById(user.getCompanyId());
-        responseDto.setUser(userDto);
-        responseDto.setCompany(companyDto);
-
-        return responseDto;
-    }
-
-    private UserDto mapToUser(User user){
-        UserDto userDto = new UserDto();
-        userDto.setFirstName(user.getFirstName());
-        userDto.setLastName(user.getLastName());
-        userDto.setPhoneNumber(user.getPhoneNumber());
+        userDto.setCompany(companyDto);
+        log.info("Пользователь {} успешно создан", newUser);
         return userDto;
     }
 
     @Override
-    public ResponseDto updateUser(long id, User updatedUser) {
-        updatedUser.setId(id);
-        User updatedSavedUser = userRepository.save(updatedUser);
-        ResponseDto responseDto = new ResponseDto();
-        UserDto userDto = mapToUser(updatedUser);
+    public UserDto getUserById(long userId) {
+        User user = userRepository.findById(userId).get();
+        UserDto userDto = mapper.toDto(user);
 
-        CompanyDto companyDto = apiClient.getUserCompanyById(updatedUser.getCompanyId());
-        responseDto.setUser(userDto);
-        responseDto.setCompany(companyDto);
-
-        return responseDto;
+        CompanyDto companyDto = apiClient.getUserCompanyById(user.getCompanyId());
+        userDto.setCompany(companyDto);
+        log.info("По ID {} возвращен пользователь {}", userId, user);
+        return userDto;
     }
 
     @Override
-    public ResponseEntity<User> deleteUser(long id) {
+    public UserDto updateUser(long id, User updatedUser) {
+        updatedUser.setId(id);
+        User updatedSavedUser = userRepository.save(updatedUser);
+        UserDto userDto = mapper.toDto(updatedUser);
+
+        CompanyDto companyDto = apiClient.getUserCompanyById(updatedUser.getCompanyId());
+        userDto.setCompany(companyDto);
+        log.info("Данные о пользователе с ID {} успешно изменены на {}", id, updatedSavedUser);
+        return userDto;
+    }
+
+    @Override
+    public ResponseEntity<UserDto> deleteUser(long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         userRepository.deleteById(id);
+        log.info("Пользователь с ID {} успешно удален", id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Override
-    public List<ResponseDto> getAllUsers() {
+    public Page<UserDto> getAllUsers(Integer offset, Integer limit) {
         List<User> users = userRepository.findAll();
-        List<ResponseDto> responsesDto = users.stream().map(user -> {
-            ResponseDto responseDto = new ResponseDto();
-            UserDto userDto = mapToUser(user);
+        List<UserDto> usersDto = users.stream().map(user -> {
+            UserDto userDto = mapper.toDto(user);
             CompanyDto companyDto = apiClient.getUserCompanyById(user.getCompanyId());
-            responseDto.setUser(userDto);
-            responseDto.setCompany(companyDto);
-            return responseDto;
+            userDto.setCompany(companyDto);
+            return userDto;
         }).toList();
 
-        return responsesDto;
-//        ResponseDto responseDto = new ResponseDto();
-//        UserDto userDto = mapToUser(user);
-//
-//        CompanyDto companyDto = apiClient.getCompanyById(user.getCompanyId());
-//        responseDto.setUser(userDto);
-//        responseDto.setCompany(companyDto);
-//
-//        return new ResponseEntity<>(users, HttpStatus.OK);
+        Pageable pageable = PageRequest.of(offset, limit);
+        long totalSize = usersDto.size();
+        Page<UserDto> resultPage = new PageImpl<>(usersDto, pageable, totalSize);
+        log.info("Возвращен список всех пользователей");
+        return resultPage;
     }
 
     @Override
     public List<UserDto> getAllUsersByCompanyId(long companyId) {
         List<User> users = userRepository.findAllUsersByCompanyId(companyId);
-        List<UserDto> usersDto = users.stream().map(this::mapToUser).collect(Collectors.toList());
+        List<UserDto> usersDto = users.stream().map(mapper::toDto).collect(Collectors.toList());
+        log.info("Возвращен список всех пользователей компании по ID {}", companyId);
         return usersDto;
     }
 }

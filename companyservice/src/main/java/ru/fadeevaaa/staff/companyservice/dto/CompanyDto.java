@@ -1,42 +1,23 @@
 package ru.fadeevaaa.staff.companyservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CompanyDto {
 
+    @NotBlank(message = "Название компании обязано быть указано.")
     private String name;
+    @Positive(message = "Бюджет компании должен быть положительным числом.")
     private Double budget;
-//    private List<Long> employeesId;
-
-    public CompanyDto() {
-    }
-
-    public CompanyDto(String name, Double budget) {
-        this.name = name;
-        this.budget = budget;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Double getBudget() {
-        return budget;
-    }
-
-    public void setBudget(Double budget) {
-        this.budget = budget;
-    }
-
-//    public List<Long> getEmployeesId() {
-//        return employeesId;
-//    }
-//
-//    public void setEmployeesId(List<Long> employeesId) {
-//        this.employeesId = employeesId;
-//    }
+    private List<UserDto> users;
 }

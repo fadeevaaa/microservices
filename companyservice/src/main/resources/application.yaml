@@ -5,7 +5,7 @@ spring:
     name: companyservice
   datasource:
     #    url: jdbc:postgresql://localhost:5432/your_database_name
-    url: jdbc:postgresql://localhost:5432/staff_db
+    url: jdbc:postgresql://localhost:5432/company_db
     #    username: your_username
     username: postgres
     #    password: your_password
@@ -17,3 +17,7 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8081/eureka/
+
+logging:
+  level:
+    root: INFO

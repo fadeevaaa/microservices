@@ -13,13 +13,13 @@ services:
     build: ./employeeservice
     depends_on:
       - eurekaserver
-      - postgres
+      - userdb
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_APPLICATION_NAME=userservice
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8081/eureka/
       - SERVER_PORT=8085
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/staff_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://userdb:5432/user_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
     expose:
@@ -31,13 +31,13 @@ services:
     build: ./companyservice
     depends_on:
       - eurekaserver
-      - postgres
+      - companydb
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_APPLICATION_NAME=companyservice
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8081/eureka/
       - SERVER_PORT=8086
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/staff_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://companydb:5432/company_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
     expose:
@@ -58,13 +58,25 @@ services:
     networks:
       - app-network
 
-  postgres:
+  companydb:
     image: 'postgres:latest'
-    container_name: 'postgresql'
+    container_name: 'postgresql1'
     ports:
-      - 5434:5432
+      - "5433:5432"
     environment:
-      - POSTGRES_DB=staff_db
+      - POSTGRES_DB=company_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - app-network
+
+  userdb:
+    image: 'postgres:latest'
+    container_name: 'postgresql2'
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_DB=user_db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     networks:
