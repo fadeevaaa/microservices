@@ -5,7 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.fadeevaaa.staff.employeeservice.dto.CompanyDto;
 
-@FeignClient(value = "companyservice", url = "http://companyservice:8086")
+//@FeignClient(value = "companyservice", url = "http://companyservice:8086")
+@FeignClient(value = "companyservice", url = "http://localhost:8080/companyservice")
 public interface APIClient {
 
     @GetMapping(value = "/companies/user/{id}")

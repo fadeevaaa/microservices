@@ -27,10 +27,4 @@ public class User {
 
     @Column(name = "company_id")
     private long companyId;
-
-    public User(String firstName, String lastName, String phoneNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-    }
 }

@@ -9,7 +9,7 @@ spring:
     #    username: your_username
     username: postgres
     #    password: your_password
-    password: postgres
+    password: fadeevaaa
   jpa:
     hibernate:
       ddl-auto: update

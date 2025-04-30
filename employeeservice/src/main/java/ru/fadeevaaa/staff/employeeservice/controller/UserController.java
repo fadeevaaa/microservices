@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.fadeevaaa.staff.employeeservice.dto.UserDto;
 import ru.fadeevaaa.staff.employeeservice.mapper.UserMapper;
+import ru.fadeevaaa.staff.employeeservice.model.User;
 import ru.fadeevaaa.staff.employeeservice.service.UserService;
 import java.util.List;
 
@@ -30,9 +31,12 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> addUser(@Valid @RequestBody UserDto user) {
+    public ResponseEntity<UserDto> addUser(@Valid @RequestBody UserDto user,
+                                           @RequestParam("companyId") @Min(1) long companyId) {
         log.info("Создание пользователя: {}", mapper.fromDto(user));
-        UserDto userDto = userService.create(mapper.fromDto(user));
+        User newUser = mapper.fromDto(user);
+        newUser.setCompanyId(companyId);
+        UserDto userDto = userService.create(newUser);
         return ResponseEntity.ok(userDto);
     }
 
