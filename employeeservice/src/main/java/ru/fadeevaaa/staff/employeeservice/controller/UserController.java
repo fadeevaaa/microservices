@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +26,7 @@ public class UserController {
     private final UserMapper mapper;
 
     @Autowired
-    public UserController(UserService userService, UserMapper mapper) {
+    public UserController(UserService userService, @Qualifier("userMapperImpl") UserMapper mapper) {
         this.userService = userService;
         this.mapper = mapper;
     }

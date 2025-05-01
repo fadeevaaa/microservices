@@ -2,7 +2,7 @@ package ru.fadeevaaa.staff.companyservice.service;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,9 +26,8 @@ public class CompanyServiceImpl implements CompanyService {
     private final APIClient apiClient;
     private final CompanyMapper mapper;
 
-    @Autowired
     public CompanyServiceImpl(CompanyRepository companyRepository, APIClient apiClient,
-                              CompanyMapper mapper) {
+                              @Qualifier("companyMapperImpl") CompanyMapper mapper) {
         this.companyRepository = companyRepository;
         this.apiClient = apiClient;
         this.mapper = mapper;

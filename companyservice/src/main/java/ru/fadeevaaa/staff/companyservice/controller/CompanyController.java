@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +24,7 @@ public class CompanyController {
     private final CompanyMapper mapper;
 
     @Autowired
-    public CompanyController(CompanyService companyService, CompanyMapper mapper) {
+    public CompanyController(CompanyService companyService, @Qualifier("companyMapperImpl") CompanyMapper mapper) {
         this.companyService = companyService;
         this.mapper = mapper;
     }

@@ -2,7 +2,7 @@ package ru.fadeevaaa.staff.employeeservice.service;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,8 +27,8 @@ public class UserServiceImpl implements UserService {
     private final APIClient apiClient;
     private final UserMapper mapper;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, APIClient apiClient, UserMapper mapper) {
+    public UserServiceImpl(UserRepository userRepository, APIClient apiClient,
+                           @Qualifier("userMapperImpl") UserMapper mapper) {
         this.userRepository = userRepository;
         this.apiClient = apiClient;
         this.mapper = mapper;

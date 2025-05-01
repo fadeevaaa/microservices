@@ -7,8 +7,7 @@ import ru.fadeevaaa.staff.companyservice.dto.UserDto;
 
 import java.util.List;
 
-//@FeignClient(value = "userservice", url = "http://userservice:8085")
-@FeignClient(value = "userservice", url = "http://localhost:8080/userservice")
+@FeignClient(value = "userservice", url = "http://userservice:8085")
 public interface APIClient {
 
     @GetMapping(value = "/users/company/{companyId}")
